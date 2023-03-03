@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "./config/variables.scss";
+
+
+//Telefon
+@font-face {
+  font-family: $font-black;
+  src: url("./fonts/RedHatDisplay-Black.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: $font-blackitalic;
+  src: url("./fonts/RedHatDisplay-BlackItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: $font-bold;
+  src: url("./fonts/RedHatDisplay-Bold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: $font-bolditalic;
+  src: url("./fonts/RedHatDisplay-BoldItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: $font-extrabold;
+  src: url("./fonts/RedHatDisplay-ExtraBold.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: $font-extrabolditalic;
+  src: url("./fonts/RedHatDisplay-ExtraBoldItalic.ttf") format("truetype");
+}
+@font-face {
+  font-family: $font-italic;
+  src: url("./fonts/RedHatDisplay-Italic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: $font-light;
+  src: url("./fonts/RedHatDisplay-Light.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: $font-lightitalic;
+  src: url("./fonts/RedHatDisplay-LightItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: $font-medium;
+  src: url("./fonts/RedHatDisplay-Medium.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: $font-mediumitalic;
+  src: url("./fonts/RedHatDisplay-MediumItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: $font-regular;
+  src: url("./fonts/RedHatDisplay-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: $font-semibold;
+  src: url("./fonts/RedHatDisplay-SemiBold.ttf") format("truetype");
+}
+@font-face {
+  font-family: $font-semibolditalic;
+  src: url("./fonts/RedHatDisplay-SemiBoldItalic.ttf") format("truetype");
+}
