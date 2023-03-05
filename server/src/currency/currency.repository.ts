@@ -24,9 +24,9 @@ export class CurrencyRepository {
         skip: (page - 1) * limit,
         take: limit,
       });
-      // if (!rates || rates.length === 0) {
-      //   throw new NotFoundException('No Live Rates Found');
-      // }
+      if (!rows || count === 0) {
+        throw new NotFoundException('No Live Rates Found');
+      }
       // server.emit('newDataAdded', rates);
       return {
         data: rows,
@@ -50,9 +50,10 @@ export class CurrencyRepository {
             'X-CoinAPI-Key': process.env.X_COINAPI_KEY,
           },
         };
+        console.log(options, 'ops');
         const getCurrencyTypes = await axios(options);
         if (!getCurrencyTypes) {
-          throw new NotFoundException('No Currency Exchange Found');
+          throw new NotFoundException('No Live Rates Found');
         }
         await this.currencyEntity.save({
           time: getCurrencyTypes.data.rates[0].time,
@@ -83,7 +84,9 @@ export class CurrencyRepository {
       };
 
       const getCurrencyExchange = await axios(options);
-
+      if (!getCurrencyExchange) {
+        throw new NotFoundException('No Currency Exchange Found');
+      }
       const saveData = {
         time: getCurrencyExchange.data.rates[0].time,
         rates: getCurrencyExchange.data.rates[0].rate * amount,
