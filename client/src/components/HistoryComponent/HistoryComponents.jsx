@@ -3,6 +3,10 @@ import { DatePicker, Space, Select, Button } from "antd";
 import { Table } from "antd";
 import qs from "qs";
 import { useEffect, useState } from "react";
+import { w3cwebsocket as WebSocket } from "websocket";
+
+const endpoint = "ws://localhost:8000";
+
 
 const onChange = (date, dateString) => {
   console.log(date, dateString);
@@ -12,30 +16,62 @@ const handleChange = (value) => {
 };
 const columns = [
   {
-    title: "Name",
-    dataIndex: "name",
+    title: "Date & Time",
+    dataIndex: "date",
     sorter: true,
     render: (name) => `${name.first} ${name.last}`,
     width: "20%",
   },
   {
-    title: "Gender",
-    dataIndex: "gender",
+    title: "Currency From",
+    dataIndex: "currencyfrom",
     filters: [
       {
-        text: "Male",
-        value: "male",
+        text: "BTC",
+        value: "btc",
       },
       {
-        text: "Female",
-        value: "female",
+        text: "ETH",
+        value: "eth",
+      },
+      {
+        text: "USD",
+        value: "usd",
       },
     ],
     width: "20%",
   },
   {
-    title: "Email",
-    dataIndex: "email",
+    title: "Amount1",
+    dataIndex: "amount1",
+  },
+  {
+    title: "Currency To",
+    dataIndex: "currencyto",
+    filters: [
+      {
+        text: "USD",
+        value: "usd",
+      },
+    ],
+  },
+  {
+    title: "Amount2",
+    dataIndex: "amount2",
+  },
+  {
+    title: "Type",
+    dataIndex: "type",
+    filters: [
+      {
+        text: "Live",
+        value: "live",
+      },
+      {
+        text: "Exchange",
+        value: "exchange",
+      },
+    ],
   },
 ];
 const getRandomuserParams = (params) => ({
@@ -52,32 +88,50 @@ const HistoryComponents = () => {
       pageSize: 10,
     },
   });
-  const fetchData = () => {
-    setLoading(true);
-    fetch(
-      `https://randomuser.me/api?${qs.stringify(
-        getRandomuserParams(tableParams)
-      )}`
-    )
-      .then((res) => res.json())
-      .then(({ results }) => {
-        setData(results);
+
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    const ws = new WebSocket(endpoint);
+    setSocket(ws);
+
+    ws.onopen = () => {
+      console.log("WebSocket connected");
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket disconnected");
+    };
+
+    ws.onmessage = (event) => {
+        const result = JSON.parse(event.data);
+        setData(result);
         setLoading(false);
         setTableParams({
           ...tableParams,
           pagination: {
             ...tableParams.pagination,
-            total: 200,
-            // 200 is mock data, you should read it from server
-            // total: data.totalCount,
+            total: result.totalCount,
           },
         });
-      });
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, []);
+
+  const fetchData = () => {
+    setLoading(true);
+    const params = qs.stringify(getRandomuserParams(tableParams));
+    const message = {
+      type: "fetch",
+      params,
+    };
+    socket.send(JSON.stringify(message));
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [JSON.stringify(tableParams)]);
+
   const handleTableChange = (pagination, filters, sorter) => {
     setTableParams({
       pagination,
@@ -89,7 +143,19 @@ const HistoryComponents = () => {
     if (pagination.pageSize !== tableParams.pagination?.pageSize) {
       setData([]);
     }
+    fetchData()
   };
+
+
+  const handleFilterChange = (value) => {
+    const message = {
+      type: "filter",
+      value,
+    };
+    socket.send(JSON.stringify(message));
+  };
+
+
   return (
     <div className="py-20 px-28 ">
       <h3 className="">History</h3>
@@ -113,18 +179,6 @@ const HistoryComponents = () => {
             }}
             onChange={handleChange}
             options={[
-              {
-                value: "jack",
-                label: "Jack",
-              },
-              {
-                value: "lucy",
-                label: "Lucy",
-              },
-              {
-                value: "Yiminghe",
-                label: "yiminghe",
-              },
               {
                 value: "disabled",
                 label: "Disabled",
