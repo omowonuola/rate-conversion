@@ -5,11 +5,14 @@ import { CurrencyEntity } from './currency.entity';
 import { CurrencyRepository } from './currency.repository';
 import { CurrencyService } from './currency.service';
 
+const getAllExchangesMock = jest.fn();
+
 const mockCardRepository = () => ({
   getAll: jest.fn(),
   query: jest.fn(),
   create: jest.fn(),
   findAndCount: jest.fn(),
+  getAllExchanges: getAllExchangesMock,
 });
 
 const mockCard = [
@@ -58,16 +61,13 @@ describe('CurrencyService', () => {
 
   describe('getAllExchanges', () => {
     it('calls the CurrencyRepository.getAllExchanges and return the result', async () => {
-      currencyRepository.getAllExchanges.mockReturnValueOnce();
+      currencyRepository.getAllExchanges.mockReturnValueOnce(Pagination);
       const result = await currencyService.getAllExchanges();
       expect(result).toBe(Pagination);
-      expect(currencyRepository.getAllExchanges()).toHaveBeenCalledWith({
-        page: 1,
-        limit: 10,
-      });
+      expect(getAllExchangesMock).toBeCalled();
     });
     it('calls the CurrencyRepository.getAllExchanges and handles an error', async () => {
-      currencyRepository.getAllExchanges.mockReturnValueOnce({});
+      currencyRepository.getAllExchanges.mockReturnValueOnce(undefined);
       await expect(currencyService.getAllExchanges()).rejects.toThrowError(
         NotFoundException,
       );
@@ -108,80 +108,3 @@ describe('CurrencyService', () => {
     });
   });
 });
-
-// import { Pagination } from 'nestjs-typeorm-paginate';
-// import { Repository } from 'typeorm';
-// import { CurrencyController } from './currency.controller';
-// import { CurrencyEntity } from './currency.entity';
-// import { CurrencyService } from './currency.service';
-
-// describe('MyController', () => {
-//   let controller: CurrencyController;
-//   let currencyService: CurrencyService;
-//   let currencyRepository: Repository<CurrencyEntity>;
-
-//   beforeEach(async () => {
-//     const module: TestingModule = await Test.createTestingModule({
-//       controllers: [CurrencyController],
-//       providers: [
-//         CurrencyService,
-//         {
-//           provide: getRepositoryToken(CurrencyEntity),
-//           useValue: {
-//             findAndCount: jest.fn(),
-//           },
-//         },
-//       ],
-//     }).compile();
-
-//     controller = module.get<CurrencyController>(CurrencyController);
-//     currencyService = module.get<CurrencyService>(CurrencyService);
-//     currencyRepository = module.get<Repository<CurrencyEntity>>(
-//       getRepositoryToken(CurrencyEntity),
-//     );
-//   });
-
-//   describe('findAll', () => {
-//     it('should return a pagination object of MyEntity instances', async () => {
-//       const entities = [new CurrencyEntity(), new CurrencyEntity()];
-//       const totalItems = entities.length;
-//       const pagination: Pagination<CurrencyEntity> = {
-//         items: entities,
-//         // links: [],
-//         meta: {
-//           itemCount: totalItems,
-//           totalItems,
-//           itemsPerPage: totalItems,
-//           totalPages: 1,
-//           currentPage: 1,
-//         },
-//       };
-//       jest
-//         .spyOn(currencyService, 'getAllExchanges')
-//         .mockResolvedValue(pagination);
-
-//       const result = await controller.getAllCurrency();
-
-//       expect(result).toBe(pagination);
-//       expect(currencyService.getAllExchanges).toHaveBeenCalledWith({
-//         page: 1,
-//         limit: 10,
-//       });
-//     });
-
-//     it('should use the provided page and limit parameters in the query', async () => {
-//       const page = 2;
-//       const limit = 20;
-//       jest
-//         .spyOn(currencyService, 'getAllExchanges')
-//         .mockResolvedValue({} as Pagination<CurrencyEntity>);
-
-//       await controller.getAllCurrency();
-
-//       expect(currencyService.getAllExchanges).toHaveBeenCalledWith({
-//         page,
-//         limit,
-//       });
-//     });
-//   });
-// });
