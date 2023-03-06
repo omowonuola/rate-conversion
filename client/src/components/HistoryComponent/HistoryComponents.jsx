@@ -91,9 +91,9 @@ const HistoryComponents = () => {
     }
   };
   return (
-    <div className="py-20 px-28">
-      <h3 className="font-bold text-2xl mb-4">History</h3>
-      <Space>
+    <div className="py-20 px-28 ">
+      <h3 className="">History</h3>
+      <Space className='margin'>
         <div>
           <p>From date</p>
           <DatePicker onChange={onChange} />
@@ -133,9 +133,11 @@ const HistoryComponents = () => {
             ]}
           />
         </div>
+        <div className="save-button">
         <Button className="border-blue-700 hover:bg-slate-500 hover:text-white text-blue-700">
           Filter
         </Button>
+        </div>
       </Space>
 
       <Table

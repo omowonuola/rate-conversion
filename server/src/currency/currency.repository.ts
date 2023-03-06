@@ -17,12 +17,20 @@ export class CurrencyRepository {
   async getAllExchanges(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
+    @Query('startDate') startDate?: Date,
+    @Query('endDate') endDate?: Date,
   ): // @WebSocketServer() server: Server,
   Promise<paginationResponse> {
     try {
       const [rows, count] = await this.currencyEntity.findAndCount({
         skip: (page - 1) * limit,
         take: limit,
+        // where: {
+        //   createdAt: {
+        //     $gte: startDate,
+        //     $lte: endDate,
+        //   },
+        // }
       });
       if (!rows || count === 0) {
         throw new NotFoundException('No Live Rates Found');
@@ -33,6 +41,8 @@ export class CurrencyRepository {
         total: count,
         page: page,
         pageSize: limit,
+        startDate,
+        endDate,
       };
     } catch (error) {
       this.logger.log(error);
